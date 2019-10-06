@@ -6,6 +6,8 @@ package myFirstExam.firstExam;
 //        cat «имя_файла» - выводит содержимое текстового файла «имя_файла»
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -30,7 +32,7 @@ public class CommandLine {
         commands.put(cmd.getName(), cmd);
         cmd = new CdCommand();
         commands.put(cmd.getName(), cmd);
-        //cmd = new CatCommand();
+        cmd = new CatCommand();
         commands.put(cmd.getName(), cmd);
         this.consoleEncoding = consoleEncoding;
     }
@@ -66,7 +68,8 @@ public class CommandLine {
     class ParsedCommand {
         String command;
         String[] args;
-         ParsedCommand(String line) {
+
+        private ParsedCommand(String line) {
             String[] parts = line.split(" ");
             command = parts[0];
             if (parts.length > 1) {
@@ -89,7 +92,7 @@ public class CommandLine {
    public static class Context {
         private File currentDirectory;
 
-         void setCurrentDirectory(File currentDirectory) {
+        void setCurrentDirectory(File currentDirectory) {
             this.currentDirectory = currentDirectory;
         }
     }
@@ -135,7 +138,7 @@ public class CommandLine {
         }
     }
 
-    class CdCommand implements Command {
+    static class CdCommand implements Command {
 
         @Override
         public boolean execute(Context context, String... args) {
@@ -175,7 +178,7 @@ public class CommandLine {
         }
     }
 
-    class DirCommand implements Command {
+    static class DirCommand implements Command {
 
         @Override
         public void printHelp() {
@@ -212,7 +215,7 @@ public class CommandLine {
         }
     }
 
-    class PwdCommand implements Command {
+    static class PwdCommand implements Command {
 
         @Override
         public boolean execute(Context context, String... args) {
@@ -242,8 +245,53 @@ public class CommandLine {
             return "Full path for current directory";
         }
     }
+static class CatCommand implements Command{
 
-    class ExitCommand implements Command {
+    @Override
+    public boolean execute(Context context, String... args) {
+        if (args == null) {
+            String currentDir = new File(".").getAbsolutePath();
+            System.out.println(currentDir);
+        } else {
+            File newFile = new File(args[0]);
+            if (newFile.isFile()) {
+                printCat(newFile);
+            } else {
+                System.out.println("It's don't file");
+            }
+        }
+        return true;
+    }
+private void printCat(File file){
+    try(FileReader reader = new FileReader(file))
+    {
+        int c;
+        while((c=reader.read())!=-1){
+
+            System.out.print((char)c);
+        }
+    }
+    catch(IOException ex){
+
+        System.out.println(ex.getMessage());
+    }
+}
+    @Override
+    public void printHelp() {
+        System.out.println(getDescription());
+    }
+
+    @Override
+    public String getName() {
+        return "CAT";
+    }
+
+    @Override
+    public String getDescription() {
+        return "output text file content";
+    }
+}
+    static class ExitCommand implements Command {
         @Override
         public boolean execute(Context context, String... args) {
             System.out.println("Finishing command processor... done.");
