@@ -65,7 +65,7 @@ public class CommandLine {
         cp.execute();
     }
 
-    class ParsedCommand {
+    static class ParsedCommand {
         String command;
         String[] args;
 
@@ -257,7 +257,7 @@ static class CatCommand implements Command{
             if (newFile.isFile()) {
                 printCat(newFile);
             } else {
-                System.out.println("It's don't file");
+                System.out.println("It's not file");
             }
         }
         return true;
