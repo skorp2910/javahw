@@ -21,7 +21,7 @@ public class CommandLine {
 
     private final String consoleEncoding;
 
-    private  CommandLine(String consoleEncoding) {
+    private CommandLine(String consoleEncoding) {
         commands = new TreeMap<>();
         Command cmd = new HelpCommand();
         commands.put(cmd.getName(), cmd);
@@ -90,7 +90,7 @@ public class CommandLine {
         String getDescription();
     }
 
-  static class Context {
+    static class Context {
         private File currentDirectory;
 
         void setCurrentDirectory(File currentDirectory) {
@@ -246,52 +246,54 @@ public class CommandLine {
             return "Full path for current directory";
         }
     }
-static class CatCommand implements Command{
 
-    @Override
-    public boolean execute(Context context, String... args) {
-        if (args == null) {
-            String currentDir = new File(".").getAbsolutePath();
-            System.out.println(currentDir);
-        } else {
-            File newFile = new File(args[0]);
-            if (newFile.isFile()) {
-                printCat(newFile);
+    static class CatCommand implements Command {
+
+        @Override
+        public boolean execute(Context context, String... args) {
+            if (args == null) {
+                String currentDir = new File(".").getAbsolutePath();
+                System.out.println(currentDir);
             } else {
-                System.out.println("It's not file");
+                File newFile = new File(args[0]);
+                if (newFile.isFile()) {
+                    printCat(newFile);
+                } else {
+                    System.out.println("It's not file");
+                }
+            }
+            return true;
+        }
+
+        private void printCat(File file) {
+            try (FileReader reader = new FileReader(file)) {
+                int c;
+                while ((c = reader.read()) != -1) {
+
+                    System.out.print((char) c);
+                }
+            } catch (IOException ex) {
+
+                System.out.println(ex.getMessage());
             }
         }
-        return true;
-    }
-private void printCat(File file){
-    try(FileReader reader = new FileReader(file))
-    {
-        int c;
-        while((c=reader.read())!=-1){
 
-            System.out.print((char)c);
+        @Override
+        public void printHelp() {
+            System.out.println(getDescription());
+        }
+
+        @Override
+        public String getName() {
+            return "CAT";
+        }
+
+        @Override
+        public String getDescription() {
+            return "output text file content";
         }
     }
-    catch(IOException ex){
 
-        System.out.println(ex.getMessage());
-    }
-}
-    @Override
-    public void printHelp() {
-        System.out.println(getDescription());
-    }
-
-    @Override
-    public String getName() {
-        return "CAT";
-    }
-
-    @Override
-    public String getDescription() {
-        return "output text file content";
-    }
-}
     static class ExitCommand implements Command {
         @Override
         public boolean execute(Context context, String... args) {
