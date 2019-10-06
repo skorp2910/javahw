@@ -11,14 +11,15 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.lang.*;
 
 public class CommandLine {
     private static final String MSG_COMMAND_NOT_FOUND = "Command not found";
-    private static final String MSG_DELIM = "==========================================";
+    private static final String MSG_DEL = "==========================================";
 
-    private Map<String, Command> commands;
+    private final Map<String, Command> commands;
 
-    private String consoleEncoding;
+    private final String consoleEncoding;
 
     private  CommandLine(String consoleEncoding) {
         commands = new TreeMap<>();
@@ -66,7 +67,7 @@ public class CommandLine {
     }
 
     static class ParsedCommand {
-        String command;
+        final String command;
         String[] args;
 
         private ParsedCommand(String line) {
@@ -89,7 +90,7 @@ public class CommandLine {
         String getDescription();
     }
 
-   public static class Context {
+  static class Context {
         private File currentDirectory;
 
         void setCurrentDirectory(File currentDirectory) {
@@ -102,21 +103,21 @@ public class CommandLine {
         @Override
         public boolean execute(Context context, String... args) {
             if (args == null) {
-                System.out.println("Avaliable commands:\n" + MSG_DELIM);
+                System.out.println("Available commands:\n" + MSG_DEL);
                 for (Command cmd : commands.values()) {
                     System.out.println(cmd.getName() + ": " + cmd.getDescription());
                 }
-                System.out.println(MSG_DELIM);
+                System.out.println(MSG_DEL);
             } else {
                 for (String cmd : args) {
-                    System.out.println("Help for command " + cmd + ":\n" + MSG_DELIM);
+                    System.out.println("Help for command " + cmd + ":\n" + MSG_DEL);
                     Command command = commands.get(cmd.toUpperCase());
                     if (command == null) {
                         System.out.println(MSG_COMMAND_NOT_FOUND);
                     } else {
                         command.printHelp();
                     }
-                    System.out.println(MSG_DELIM);
+                    System.out.println(MSG_DEL);
                 }
             }
             return true;
